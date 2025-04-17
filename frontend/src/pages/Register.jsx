@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios'; //  Import custom axios instance
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import InputField from '../components/InputField';
+import Button from '../components/Button';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -52,7 +54,9 @@ export default function Register() {
     }
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { email, password });
+      // Use custom axios instance
+      await api.post('/auth/register', { email, password });
+
       toast.success('Registered successfully! Redirecting...');
       setTimeout(() => {
         window.location.href = '/';
@@ -76,51 +80,46 @@ export default function Register() {
         </div>
 
         <div className="space-y-4">
-          {/* Email */}
           <div>
-            <input
-              className={`w-full px-4 py-2 border ${
-                errors.email ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none`}
-              placeholder="Email"
+            <InputField
+              label="Email"
+              name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              required
             />
             {errors.email && <p className="text-sm text-red-500 mt-1">{errors.email}</p>}
           </div>
 
-          {/* Password */}
           <div>
             <div className="relative">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                className={`w-full px-4 py-2 border ${
-                  errors.password ? 'border-red-500' : 'border-gray-300'
-                } rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none`}
-                placeholder="Password"
+              <InputField
+                label="Password"
+                name="password"
                 value={password}
                 onChange={(e) => handlePasswordChange(e.target.value)}
+                type={showPassword ? 'text' : 'password'}
+                required
               />
-              <button
+              <Button
+                text={showPassword ? 'Hide' : 'Show'}
                 type="button"
                 onClick={toggleShowPassword}
-                className="absolute right-3 top-2 text-sm text-gray-500 hover:text-gray-700"
-              >
-                {showPassword ? 'Hide' : 'Show'}
-              </button>
+                className="absolute right-3 top-8 text-sm text-gray-500 hover:text-gray-700 bg-transparent px-0 py-0"
+              />
             </div>
             {errors.password && <p className="text-sm text-red-500 mt-1">{errors.password}</p>}
             {password && (
               <div className="text-xs mt-1 text-gray-600">
-                Password strength:{" "}
+                Password strength:{' '}
                 <span
-                  className={`font-semibold ${
-                    passwordStrength === 'Strong'
-                      ? 'text-green-600'
-                      : passwordStrength === 'Medium'
+                  className={`font-semibold ${passwordStrength === 'Strong'
+                    ? 'text-green-600'
+                    : passwordStrength === 'Medium'
                       ? 'text-yellow-500'
                       : 'text-red-500'
-                  }`}
+                    }`}
                 >
                   {passwordStrength}
                 </span>
@@ -128,29 +127,25 @@ export default function Register() {
             )}
           </div>
 
-          {/* Confirm Password */}
           <div>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              className={`w-full px-4 py-2 border ${
-                errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:ring-2 focus:ring-green-400 focus:outline-none`}
-              placeholder="Confirm Password"
+            <InputField
+              label="Confirm Password"
+              name="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              type={showPassword ? 'text' : 'password'}
+              required
             />
             {errors.confirmPassword && (
               <p className="text-sm text-red-500 mt-1">{errors.confirmPassword}</p>
             )}
           </div>
 
-          {/* Submit */}
-          <button
-            className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition duration-300"
+          <Button
+            text="Register"
             onClick={handleRegister}
-          >
-            Register
-          </button>
+            className="w-full text-white bg-green-600 hover:bg-green-700"
+          />
         </div>
 
         <p className="text-sm text-gray-500 text-center mt-6">
@@ -161,7 +156,6 @@ export default function Register() {
         </p>
       </div>
 
-      {/* Toast container */}
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );

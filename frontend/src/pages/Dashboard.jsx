@@ -1,31 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import Button from '../components/Button';
+import { FiEye, FiEdit, FiTrash } from "react-icons/fi";
+import { fetchProjects, deleteProject } from '../features/project/projectSlice';
 
 export default function Dashboard() {
-  const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const fetchProjects = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:5000/api/projects', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProjects(res.data);
-    } catch (err) {
-      console.error('Error fetching projects:', err);
-      setError('Failed to load projects.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { projects, loading, error } = useSelector((state) => state.project);
+
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    dispatch(fetchProjects());
+  }, [dispatch]);
 
   const getProgress = (tasks = []) => {
     if (!tasks.length) return 0;
@@ -37,15 +26,11 @@ export default function Dashboard() {
     const confirm = window.confirm('Are you sure you want to delete this project?');
     if (!confirm) return;
 
-    try {
-      const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/projects/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProjects((prev) => prev.filter((proj) => proj._id !== id));
-    } catch (err) {
-      console.error('❌ Error deleting project:', err);
+    const res = await dispatch(deleteProject(id));
+
+    if (res.meta.requestStatus === 'rejected') {
       alert('Failed to delete project');
+      console.error(res.error || res.payload);
     }
   };
 
@@ -59,18 +44,18 @@ export default function Dashboard() {
       {/* Navbar */}
       <nav className="bg-white shadow p-4 flex justify-between items-center">
         <h1 className="text-xl font-bold text-gray-800">📁 Project Tracker</h1>
-        <div className="space-x-2">
+        <div className="space-x-2 flex">
           <Link to="/add-project">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-              + Add Project
-            </button>
+            <Button
+              text="+ Add Project"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+            />
           </Link>
-          <button
+          <Button
+            text="Logout"
             onClick={handleLogout}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
-          >
-            Logout
-          </button>
+          />
         </div>
       </nav>
 
@@ -93,30 +78,27 @@ export default function Dashboard() {
               >
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl font-semibold text-gray-800">
-                      {project.name}
-                    </h3>
+                    <h3 className="text-xl font-semibold text-gray-800">{project.name}</h3>
                     <p className="text-sm text-gray-600 mb-3">{project.description}</p>
                   </div>
-                  <div className="space-x-1">
-                    <button
+
+                  <div className="space-x-1 flex">
+                    <Button
+                      text={<FiEye />}
                       onClick={() => navigate(`/project/${project._id}`)}
-                      className="text-blue-600 text-sm hover:underline"
-                    >
-                      View
-                    </button>
-                    <button
+                      className="text-blue-600 text-m hover:underline px-0 py-0"
+                    />
+                    <Button
+                      text={<FiEdit />}
                       onClick={() => navigate(`/edit-project/${project._id}`)}
-                      className="text-yellow-600 text-sm hover:underline"
-                    >
-                      Edit
-                    </button>
-                    <button
+                      className="text-yellow-600 text-m hover:underline px-0 py-0"
+                    />
+                    <Button
+                      text={<FiTrash />}
                       onClick={() => handleDelete(project._id)}
-                      className="text-red-600 text-sm hover:underline"
-                    >
-                      Delete
-                    </button>
+                      disabled={loading}
+                      className="text-red-600 text-m hover:underline px-0 py-0"
+                    />
                   </div>
                 </div>
 

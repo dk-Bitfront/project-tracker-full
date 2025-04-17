@@ -1,5 +1,6 @@
-// src/components/ProjectForm.jsx
 import React, { useState, useEffect } from 'react';
+import InputField from '../components/InputField';
+import Button from '../components/Button';
 
 export default function ProjectForm({ onSubmit, initialData }) {
   const [form, setForm] = useState({
@@ -32,47 +33,36 @@ export default function ProjectForm({ onSubmit, initialData }) {
         {initialData ? 'Edit Project' : 'Create Project'}
       </h2>
 
-      <div className="mb-4">
-        <label className="block font-semibold">Project Name</label>
-        <input
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-      </div>
+      <InputField
+        label="Project Name"
+        name="name"
+        value={form.name}
+        onChange={handleChange}
+        required
+      />
 
-      <div className="mb-4">
-        <label className="block font-semibold">Description</label>
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-      </div>
+      <InputField
+        label="Description"
+        name="description"
+        value={form.description}
+        onChange={handleChange}
+        required
+        textarea
+      />
 
-      <div className="mb-4">
-        <label className="block font-semibold">Deadline</label>
-        <input
-          type="date"
-          name="deadline"
-          value={form.deadline}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-      </div>
-
-      <button
+      <InputField
+        label="Deadline"
+        name="deadline"
+        type="date"
+        value={form.deadline}
+        onChange={handleChange}
+        required
+      />
+      <Button
         type="submit"
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-      >
-        {initialData ? 'Update Project' : 'Create Project'}
-      </button>
+        text={initialData ? "Update Project" : "Create Project"}
+        className='bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded'
+      />
     </form>
   );
 }

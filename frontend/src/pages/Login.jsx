@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios'; 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import InputField from '../components/InputField';
+import Button from '../components/Button';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -10,12 +12,16 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
+      //  Use custom Axios instance
+      const res = await api.post('/auth/login', {
         email,
         password,
       });
+
+      //  Save token in localStorage
       localStorage.setItem('token', res.data.token);
       toast.success('Login successful! Redirecting...');
+      
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 1500);
@@ -33,42 +39,42 @@ export default function Login() {
         </div>
 
         <div className="space-y-4">
-          {/* Email Input */}
-          <input
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-            placeholder="Email"
+          <InputField
+            label="Email"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            required
           />
 
-          {/* Password Input */}
           <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-              placeholder="Password"
+            <InputField
+              label="Password"
+              name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              type={showPassword ? 'text' : 'password'}
+              required
             />
-            <button
+
+            <Button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-2 right-3 text-sm text-gray-500 hover:text-gray-700"
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
+              className="absolute right-3 top-8 text-sm text-gray-500 hover:text-gray-700 px-0 py-0 bg-transparent"
+              text={showPassword ? 'Hide' : 'Show'}
+              
+            />
           </div>
 
-          {/* Login Button */}
-          <button
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+          <Button
+            text="Login"
             onClick={handleLogin}
-          >
-            Login
-          </button>
+            variant="primary"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+          />
         </div>
 
-        {/* Register Link */}
         <p className="text-sm text-gray-500 text-center mt-6">
           Don’t have an account?{' '}
           <a href="/register" className="text-blue-600 font-medium hover:underline">
@@ -77,8 +83,6 @@ export default function Login() {
         </p>
       </div>
 
-      {/* Toast Notifications */}
-      
       <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );

@@ -7,7 +7,7 @@ module.exports = function (req, res, next) {
     : authHeader;
 
   if (!token) {
-    console.warn('🔒 No token provided');
+    console.warn('No token provided');
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
 
@@ -16,7 +16,7 @@ module.exports = function (req, res, next) {
     req.user = decoded;
     next();
   } catch (err) {
-    console.error('🔒 Invalid token:', err.message);
+    console.error('Invalid token:', err.message);
     return res.status(403).json({ message: 'Invalid token.' });
   }
 };

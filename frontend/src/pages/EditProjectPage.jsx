@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api/axios'; 
 import ProjectForm from '../components/ProjectForm';
 
 export default function EditProjectPage() {
@@ -11,12 +11,9 @@ export default function EditProjectPage() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5000/api/projects`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const res = await api.get('/projects');
         const project = res.data.find((proj) => proj._id === id);
+
         if (project) {
           setInitialData({
             name: project.name,
@@ -38,19 +35,11 @@ export default function EditProjectPage() {
 
   const handleUpdate = async (updatedData) => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.put(
-        `http://localhost:5000/api/projects/${id}`,
-        updatedData,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      console.log('✅ Project updated:', res.data);
+      const res = await api.put(`/projects/${id}`, updatedData);
+      console.log('Project updated:', res.data);
       navigate('/dashboard');
     } catch (err) {
-      console.error('❌ Error updating project:', err);
+      console.error('Error updating project:', err);
       alert('Update failed');
     }
   };

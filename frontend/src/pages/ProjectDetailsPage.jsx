@@ -164,7 +164,7 @@ export default function ProjectDetailsPage() {
               <option>Done</option>
             </select>
             <button
-              onClick={() => setTaskForm(task)}
+              onClick={() => handleEditTask(task)}
               className="text-blue-600 hover:underline text-sm"
             >
               Edit
