@@ -23,13 +23,21 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
-// GET all projects (removed .populate unless needed)
+//  GET all projects with their tasks (for dashboard)
 router.get('/', auth, async (req, res) => {
   try {
-    const projects = await Project.find({ user: req.user.id }); // removed .populate('tasks')
-    res.json(projects);
+    const projects = await Project.find({ user: req.user.id });
+
+    const projectsWithTasks = await Promise.all(
+      projects.map(async (project) => {
+        const tasks = await Task.find({ projectId: project._id });
+        return { ...project.toObject(), tasks };
+      })
+    );
+
+    res.json(projectsWithTasks);
   } catch (err) {
-    console.error('❌ Error fetching projects:', err);
+    console.error('❌ Error fetching projects with tasks:', err);
     res.status(500).json({ message: 'Failed to fetch projects' });
   }
 });
@@ -48,7 +56,7 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-//  DELETE project
+// DELETE project and its tasks
 router.delete('/:id', auth, async (req, res) => {
   try {
     await Project.findOneAndDelete({ _id: req.params.id, user: req.user.id });
@@ -59,7 +67,7 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-//  ADD task to project
+// ADD task to project
 router.post('/:projectId/tasks', auth, async (req, res) => {
   try {
     const task = new Task({ ...req.body, projectId: req.params.projectId });
@@ -70,7 +78,7 @@ router.post('/:projectId/tasks', auth, async (req, res) => {
   }
 });
 
-//  GET tasks for a project
+// GET tasks for a project
 router.get('/:projectId/tasks', auth, async (req, res) => {
   try {
     const tasks = await Task.find({ projectId: req.params.projectId });
@@ -80,7 +88,7 @@ router.get('/:projectId/tasks', auth, async (req, res) => {
   }
 });
 
-//  UPDATE task
+// UPDATE task
 router.put('/:projectId/tasks/:taskId', auth, async (req, res) => {
   try {
     const updated = await Task.findByIdAndUpdate(req.params.taskId, req.body, { new: true });
@@ -90,7 +98,7 @@ router.put('/:projectId/tasks/:taskId', auth, async (req, res) => {
   }
 });
 
-//  DELETE task
+// DELETE task
 router.delete('/:projectId/tasks/:taskId', auth, async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.taskId);
@@ -100,7 +108,7 @@ router.delete('/:projectId/tasks/:taskId', auth, async (req, res) => {
   }
 });
 
-//  UPDATE task status directly
+// UPDATE task status directly
 router.put('/task/:id', auth, async (req, res) => {
   try {
     const task = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });

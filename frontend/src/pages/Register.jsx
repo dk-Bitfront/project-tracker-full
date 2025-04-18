@@ -5,6 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
+import { TOAST_MESSAGES,VALIDATION_ERRORS } from '../constants/messages';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -29,41 +30,41 @@ export default function Register() {
 
   const validateInputs = () => {
     const newErrors = {};
-
+  
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email) newErrors.email = 'Email is required.';
-    else if (!emailRegex.test(email)) newErrors.email = 'Invalid email format.';
-
+    if (!email) newErrors.email = VALIDATION_ERRORS.EMAIL_REQUIRED;
+    else if (!emailRegex.test(email)) newErrors.email = VALIDATION_ERRORS.INVALID_EMAIL;
+  
     const passwordRegex = /^(?=.*[a-zA-Z])(?=.*[\W_]).{8,}$/;
-    if (!password) newErrors.password = 'Password is required.';
+    if (!password) newErrors.password = VALIDATION_ERRORS.PASSWORD_REQUIRED;
     else if (!passwordRegex.test(password))
-      newErrors.password = 'Password must be at least 8 characters and include letters and a symbol.';
-
-    if (!confirmPassword) newErrors.confirmPassword = 'Confirm your password.';
+      newErrors.password = VALIDATION_ERRORS.PASSWORD_WEAK;
+  
+    if (!confirmPassword) newErrors.confirmPassword = VALIDATION_ERRORS.CONFIRM_PASSWORD_REQUIRED;
     else if (confirmPassword !== password)
-      newErrors.confirmPassword = 'Passwords do not match.';
-
+      newErrors.confirmPassword = VALIDATION_ERRORS.PASSWORDS_DO_NOT_MATCH;
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleRegister = async () => {
     if (!validateInputs()) {
-      toast.error('Please fix the form errors');
+      toast.error(TOAST_MESSAGES.FORM_ERROR);
       return;
     }
-
+    
     try {
-      // Use custom axios instance
       await api.post('/auth/register', { email, password });
-
-      toast.success('Registered successfully! Redirecting...');
+    
+      toast.success(TOAST_MESSAGES.REGISTRATION_SUCCESS);
       setTimeout(() => {
         window.location.href = '/';
       }, 2000);
     } catch (err) {
-      toast.error('Registration failed. Try again later.');
+      toast.error(TOAST_MESSAGES.REGISTRATION_FAILED);
     }
+    
   };
 
   const handlePasswordChange = (value) => {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import api from '../api/axios'; 
 import ProjectForm from '../components/ProjectForm';
+import { TOAST_MESSAGES } from '../constants/messages';
 
 export default function EditProjectPage() {
   const { id } = useParams();
@@ -25,8 +26,8 @@ export default function EditProjectPage() {
           navigate('/dashboard');
         }
       } catch (err) {
-        console.error('❌ Error fetching project:', err);
-        alert('Failed to load project');
+        console.error('Error fetching project:', err);
+        alert(TOAST_MESSAGES.FAIL_TO_LOAD_PROJECT);
       }
     };
 
@@ -40,7 +41,7 @@ export default function EditProjectPage() {
       navigate('/dashboard');
     } catch (err) {
       console.error('Error updating project:', err);
-      alert('Update failed');
+      alert(TOAST_MESSAGES.FAIL_TO_UPDATE_PROJECT);
     }
   };
 

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import ProjectForm from '../components/ProjectForm';
 import Button from '../components/Button';
 import { addProject } from '../features/project/projectSlice';
+import { TOAST_MESSAGES } from '../constants/messages';
 
 export default function AddProjectPage() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function AddProjectPage() {
       navigate('/dashboard');
     } else {
       console.error('Error creating project:', res.payload || res.error);
-      alert('Failed to create project.');
+      alert(TOAST_MESSAGES.FAIL_TO_CREATE_PROJECT);
     }
   };
 

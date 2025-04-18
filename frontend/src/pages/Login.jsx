@@ -4,6 +4,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import InputField from '../components/InputField';
 import Button from '../components/Button';
+import { TOAST_MESSAGES } from '../constants/messages';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -20,13 +21,13 @@ export default function Login() {
 
       //  Save token in localStorage
       localStorage.setItem('token', res.data.token);
-      toast.success('Login successful! Redirecting...');
-      
+      toast.success(TOAST_MESSAGES.LOGIN_SUCCESS);
+      //  Redirect to dashboard after a short delay
       setTimeout(() => {
         window.location.href = '/dashboard';
       }, 1500);
     } catch (err) {
-      toast.error('Login failed. Please check your credentials.');
+      toast.error(TOAST_MESSAGES.LOGIN_FAILED);
     }
   };
 

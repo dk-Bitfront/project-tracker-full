@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import { FiEye, FiEdit, FiTrash } from "react-icons/fi";
 import { fetchProjects, deleteProject } from '../features/project/projectSlice';
+import { TOAST_MESSAGES } from '../constants/messages';
 
 export default function Dashboard() {
   const dispatch = useDispatch();
@@ -23,7 +24,7 @@ export default function Dashboard() {
   };
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm('Are you sure you want to delete this project?');
+    const confirm = window.confirm(TOAST_MESSAGES.PROJECT_DELETED);
     if (!confirm) return;
 
     const res = await dispatch(deleteProject(id));
@@ -64,11 +65,11 @@ export default function Dashboard() {
         <h2 className="text-3xl font-bold mb-6">📊 Dashboard</h2>
 
         {loading ? (
-          <div className="text-gray-500">Loading projects...</div>
+          <div className="text-gray-500">{TOAST_MESSAGES.LOADING_PROJECTS}</div>
         ) : error ? (
           <div className="text-red-500">{error}</div>
         ) : projects.length === 0 ? (
-          <p className="text-gray-600">No projects found. Start by creating one!</p>
+          <p className="text-gray-600">{TOAST_MESSAGES.NO_PROJECTS_FOUND}</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {projects.map((project) => (
